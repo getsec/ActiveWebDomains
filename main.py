@@ -4,40 +4,33 @@ from os import system
 from os import path
 from sys import argv
 from sys import exit
+
+from webenum.help import install_sublister
+from webenum.help import execute_sublister
+from webenum.help import web_scan_results
+
+# How long do we want to wait for requests
+# This is represented in seconds.
 TIMEOUT_FLOAT = 10.0
 
-def install_sublister(git_url, folder):
-    try:
-        system(f"git clone {git_url}")
-        system(f"pip install -r {folder}/requirements.txt")
-    except Exception:
-        print("Could not download sublister - ensure git is installed.")
 
-
-def execute_sublister(domain_scan_cmd):
-    system(domain_scan_cmd.format(domain, output_file))
-
-
-def web_scan_results(output_file):
-    with open(output_file) as fp:
-        line = fp.readlines()
-    for i in line:
-        url = i.strip("\n")
+def pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err):
+    for i in http_200:
+        print(good(f"{i['status_code']} @ {i['url']}"))
+    for i in http_non200:
+        print(info(f"{i['status_code']} @ {i['url']}"))
+    for i in http_timeout:
+        print(bad(lightred(f"{i['status_code']} @ {i['url']}")))
+    for i in http_err:
         try:
-            r = requests.get(f"https://{url}", timeout=TIMEOUT_FLOAT)
-            if r.ok:
-                msg = f"{url} - found {r.status_code} "
-                print(good(msg))
-            else:
-                msg = f"{url} - found {r.status_code}"
-                print(info(msg))
-        except requests.exceptions.ConnectionError:
-            pass 
-        except requests.exceptions.ReadTimeout:
-            print(bad(f"{url} - Response took too long {TIMEOUT_FLOAT}s"))
+            print(bad(f"{i['status_code']} @ {i['url']}"))
+        except TypeError:
+            # means nothing was in the list
+            pass
 
-        
-   
+    
+
+
 if __name__ in "__main__":
     try:
         domain = argv[1]
@@ -45,12 +38,12 @@ if __name__ in "__main__":
         print(bad(bold(red(f"USE: python {argv[0]} example.com"))))
         exit()
     git_url = "https://github.com/aboul3la/Sublist3r.git"
-    folder = git_url.split('/')[-1].split('.')[0]
+    sublister_folder = git_url.split('/')[-1].split('.')[0]
     output_file = f"outputs/{domain}-output.txt"
-    domain_scan_cmd = f"python {folder}/sublist3r.py -n -d {domain} -o {output_file} > /dev/null "
+    domain_scan_cmd = f"python {sublister_folder}/sublist3r.py -n -d {domain} -o {output_file} > /dev/null "
     
     # If Sublister is already downloaded move on. 
-    if path.isdir(folder):
+    if path.isdir(sublister_folder):
         
         # If there is already a sub enum scan
         # ask the user if they want to re-scan...
@@ -60,18 +53,21 @@ if __name__ in "__main__":
             
             # if no - just rescan old output
             if question.lower() == "n":
-                web_scan_results(output_file)
-            
+                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
+                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
             # if yes - redo the whole enum
             elif question.lower() == "y":
+                print(info("Currently Looking for domains - This may take some time"))
                 execute_sublister(domain_scan_cmd)
-                web_scan_results(output_file)
-        
+                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
+                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
         # if there is no output files
         # go ahead and just scan like normal.
         else:
+            print(info("Currently Looking for domains - This may take some time"))
             execute_sublister(domain_scan_cmd)
-            web_scan_results(output_file)
+            http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
+            pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
     # If sublister isn't installed use git.
     else:
-        install_sublister(git_url, folder)
+        install_sublister(git_url, sublister_folder)
