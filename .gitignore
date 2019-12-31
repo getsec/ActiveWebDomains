@@ -5,3 +5,5 @@ venv
 venv/*
 
 outputs/*.txt
+webenum/__pycache__
+webenum/__pycache__/*
