@@ -3,8 +3,8 @@ from huepy import *
 from os import system
 from os import path
 from sys import argv
-
-TIMEOUT_FLOAT = 2.0
+from sys import exit
+TIMEOUT_FLOAT = 10.0
 
 def install_sublister(git_url, folder):
     try:
@@ -39,23 +39,39 @@ def web_scan_results(output_file):
         
    
 if __name__ in "__main__":
+    try:
+        domain = argv[1]
+    except Exception:
+        print(bad(bold(red(f"USE: python {argv[0]} example.com"))))
+        exit()
     git_url = "https://github.com/aboul3la/Sublist3r.git"
-    folder = git_url.split('/')[-1].split('.')[0] 
-    domain = argv[1]
+    folder = git_url.split('/')[-1].split('.')[0]
     output_file = f"outputs/{domain}-output.txt"
     domain_scan_cmd = f"python {folder}/sublist3r.py -n -d {domain} -o {output_file} > /dev/null "
-    # It's already downloaded
-
+    
+    # If Sublister is already downloaded move on. 
     if path.isdir(folder):
-        print(folder + "is installed - Good to go.")
-
+        
+        # If there is already a sub enum scan
+        # ask the user if they want to re-scan...
         if path.isfile(f"{output_file}"):
             print(que(f"There is already an active output file: {output_file}"))
             question = input(que("Shall we re-scan for new domains? [y/n]"))
+            
+            # if no - just rescan old output
             if question.lower() == "n":
                 web_scan_results(output_file)
+            
+            # if yes - redo the whole enum
+            elif question.lower() == "y":
+                execute_sublister(domain_scan_cmd)
+                web_scan_results(output_file)
+        
+        # if there is no output files
+        # go ahead and just scan like normal.
         else:
             execute_sublister(domain_scan_cmd)
             web_scan_results(output_file)
+    # If sublister isn't installed use git.
     else:
         install_sublister(git_url, folder)
