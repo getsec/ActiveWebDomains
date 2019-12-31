@@ -1,0 +1,8 @@
+.vscode
+Sublist3r
+Sublist3r/*
+venv
+venv/*
+
+*.txt
+outputs/*
