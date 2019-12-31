@@ -4,5 +4,4 @@ Sublist3r/*
 venv
 venv/*
 
-*.txt
 outputs/*
