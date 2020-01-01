@@ -23,3 +23,6 @@ pip install -r requirements.txt
 ```sh
 python main.py domain.com
 ```
+
+## Example Screenshot
+![Test Image 2]("example.png")
