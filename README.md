@@ -25,4 +25,12 @@ python main.py domain.com
 ```
 
 ## Example Screenshot
-![](examples/example.png)
+
+Example basic usage
+[![asciicast](https://asciinema.org/a/Brfh98CUORaPhLJvcCYCfGy5N.svg)](https://asciinema.org/a/Brfh98CUORaPhLJvcCYCfGy5N)
+
+Example re-usage
+[![asciicast](https://asciinema.org/a/eanVwvjQd4qna8oy3gQCRzAMk.svg)](https://asciinema.org/a/eanVwvjQd4qna8oy3gQCRzAMk)
+
+Example with something a little bigger.
+[![asciicast](https://asciinema.org/a/4VHm0yJ4reRgoQeqa96mDeGYb.svg)](https://asciinema.org/a/4VHm0yJ4reRgoQeqa96mDeGYb)
