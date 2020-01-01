@@ -7,28 +7,22 @@ from sys import exit
 
 from webenum.help import install_sublister
 from webenum.help import execute_sublister
-from webenum.help import web_scan_results
+from webenum.fast import web_scan_results
 
 # How long do we want to wait for requests
 # This is represented in seconds.
 TIMEOUT_FLOAT = 10.0
 
 
-def pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err):
-    for i in http_200:
-        print(good(f"{i['status_code']} @ {i['url']}"))
-    for i in http_non200:
-        print(info(f"{i['status_code']} @ {i['url']}"))
-    for i in http_timeout:
-        print(bad(lightred(f"{i['status_code']} @ {i['url']}")))
-    for i in http_err:
-        try:
-            print(bad(f"{i['status_code']} @ {i['url']}"))
-        except TypeError:
-            # means nothing was in the list
-            pass
-
-    
+def pretty_print_parsed_results(output):
+    for i in output:
+        if i is not None:
+            if i['status_code'] in range(0,399):
+                print(good(f"{i['status_code']} @ {i['url']}"))
+            elif i['status_code'] in range(400,499):
+                print(info(f"{i['status_code']} @ {i['url']}"))
+            elif i['status_code'] in range(500,599):
+                print(bad(f"{i['status_code']} @ {i['url']}"))
 
 
 if __name__ in "__main__":
@@ -49,25 +43,25 @@ if __name__ in "__main__":
         # ask the user if they want to re-scan...
         if path.isfile(f"{output_file}"):
             print(que(f"There is already an active output file: {output_file}"))
-            question = input(que("Shall we re-scan for new domains? [y/n]"))
+            question = input(que("Shall we re-scan for new domains? [y/n]: "))
             
             # if no - just rescan old output
             if question.lower() == "n":
-                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+                output = web_scan_results(output_file, TIMEOUT_FLOAT)
+                pretty_print_parsed_results(output)
             # if yes - redo the whole enum
             elif question.lower() == "y":
                 print(info("Currently Looking for domains - This may take some time"))
                 execute_sublister(domain_scan_cmd)
-                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+                output = web_scan_results(output_file, TIMEOUT_FLOAT)
+                pretty_print_parsed_results(output)
         # if there is no output files
         # go ahead and just scan like normal.
         else:
             print(info("Currently Looking for domains - This may take some time"))
             execute_sublister(domain_scan_cmd)
-            http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-            pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+            output = web_scan_results(output_file, TIMEOUT_FLOAT)
+            pretty_print_parsed_results(output)
     # If sublister isn't installed use git.
     else:
         install_sublister(git_url, sublister_folder)
