@@ -25,4 +25,4 @@ python main.py domain.com
 ```
 
 ## Example Screenshot
-![Test Image 2]("example.png")
+![Test Image 2]("examples/example.png")
