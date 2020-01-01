@@ -24,7 +24,7 @@ pip install -r requirements.txt
 python main.py domain.com
 ```
 
-## Example Screenshot
+## Examples
 
 Example basic usage
 [![asciicast](https://asciinema.org/a/Brfh98CUORaPhLJvcCYCfGy5N.svg)](https://asciinema.org/a/Brfh98CUORaPhLJvcCYCfGy5N)
@@ -34,3 +34,6 @@ Example re-usage
 
 Example with something a little bigger.
 [![asciicast](https://asciinema.org/a/4VHm0yJ4reRgoQeqa96mDeGYb.svg)](https://asciinema.org/a/4VHm0yJ4reRgoQeqa96mDeGYb)
+
+## Gotchas
+1. If the host uses cloudflare domain protection, I've noticed that DNS resolver will resolve every single domain name you request. So, careful with that.
