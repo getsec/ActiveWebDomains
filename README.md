@@ -24,5 +24,5 @@ pip install -r requirements.txt
 python main.py domain.com
 ```
 
-## Example Screenshot
-![Test Image 2]("examples/example.png")
+
+![Test Image 2]("https://raw.githubusercontent.com/getsec/ActiveWebDomains/master/examples/example.png")
