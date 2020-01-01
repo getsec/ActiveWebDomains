@@ -4,6 +4,9 @@ from requests import exceptions
 from requests import get
 from tqdm import tqdm
 
+import asyncio
+from aiohttp import ClientSession
+
 def install_sublister(git_url, sublister_folder):
     system(f"git clone {git_url}")
     system(f"pip install -r {sublister_folder}/requirements.txt")
@@ -37,3 +40,11 @@ def web_scan_results(output_file, TIMEOUT_FLOAT):
     return http_200, http_non200, http_timeout, http_err
 
 
+def fetch(session, csv):
+    base_url = "https://people.sc.fsu.edu/~jburkardt/data/csv/"
+    with session.get(base_url + csv) as response:
+        data = response.text
+        if response.status_code != 200:
+            print("FAILURE::{0}".format(url))
+        # Return .csv data for future consumption
+        return data
