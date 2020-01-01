@@ -14,21 +14,10 @@ from webenum.help import web_scan_results
 TIMEOUT_FLOAT = 10.0
 
 
-def pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err):
-    for i in http_200:
-        print(good(f"{i['status_code']} @ {i['url']}"))
-    for i in http_non200:
-        print(info(f"{i['status_code']} @ {i['url']}"))
-    for i in http_timeout:
-        print(bad(lightred(f"{i['status_code']} @ {i['url']}")))
-    for i in http_err:
-        try:
-            print(bad(f"{i['status_code']} @ {i['url']}"))
-        except TypeError:
-            # means nothing was in the list
-            pass
+def parse_results(http):
+    for i in http:
+        print(good(f"{i['status_code']} @ {i['url']} \"{i['soup']}\""))
 
-    
 
 
 if __name__ in "__main__":
@@ -53,21 +42,23 @@ if __name__ in "__main__":
             
             # if no - just rescan old output
             if question.lower() == "n":
-                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+                http = web_scan_results(output_file, TIMEOUT_FLOAT)
+                parse_results(http)
             # if yes - redo the whole enum
             elif question.lower() == "y":
                 print(info("Currently Looking for domains - This may take some time"))
                 execute_sublister(domain_scan_cmd)
-                http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-                pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+                http = web_scan_results(output_file, TIMEOUT_FLOAT)
+                parse_results(http)
+        
         # if there is no output files
         # go ahead and just scan like normal.
         else:
             print(info("Currently Looking for domains - This may take some time"))
             execute_sublister(domain_scan_cmd)
-            http_200, http_non200, http_timeout, http_err = web_scan_results(output_file, TIMEOUT_FLOAT)
-            pretty_print_parsed_results(http_200, http_non200, http_timeout, http_err)
+            http = web_scan_results(output_file, TIMEOUT_FLOAT)
+            parse_results(http)
+    
     # If sublister isn't installed use git.
     else:
         install_sublister(git_url, sublister_folder)
