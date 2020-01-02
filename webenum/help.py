@@ -7,12 +7,21 @@ from tqdm import tqdm
 import asyncio
 from aiohttp import ClientSession
 
-def install_sublister(git_url, sublister_folder):
-    system(f"git clone {git_url}")
-    system(f"pip install -r {sublister_folder}/requirements.txt")
+
+git_url = "https://github.com/aboul3la/Sublist3r.git"
+sublister_folder = git_url.split('/')[-1].split('.')[0]
 
 
-def execute_sublister(domain_scan_cmd):
+def install_sublister():
+    try:
+        system(f"git clone {git_url}")
+        system(f"pip install -r {sublister_folder}/requirements.txt")
+        return sublister_folder
+    except Exception as msg:
+        return f"Failed to install sublister. {msg}"
+
+def execute_sublister(domain, output_file):
+    domain_scan_cmd = f"python {sublister_folder}/sublist3r.py -n -d {domain} -o {output_file} > /dev/null "
     system(domain_scan_cmd)
 
 
@@ -40,11 +49,4 @@ def web_scan_results(output_file, TIMEOUT_FLOAT):
     return http_200, http_non200, http_timeout, http_err
 
 
-def fetch(session, csv):
-    base_url = "https://people.sc.fsu.edu/~jburkardt/data/csv/"
-    with session.get(base_url + csv) as response:
-        data = response.text
-        if response.status_code != 200:
-            print("FAILURE::{0}".format(url))
-        # Return .csv data for future consumption
-        return data
+
