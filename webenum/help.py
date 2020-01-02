@@ -20,6 +20,7 @@ def install_sublister():
     except Exception as msg:
         return f"Failed to install sublister. {msg}"
 
+
 def execute_sublister(domain, output_file):
     domain_scan_cmd = f"python {sublister_folder}/sublist3r.py -n -d {domain} -o {output_file} > /dev/null "
     system(domain_scan_cmd)
