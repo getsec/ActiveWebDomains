@@ -5,6 +5,7 @@ venv
 venv/*
 
 outputs/*.txt
+reports/*.json
 **/__pycache__/
 
 testing
